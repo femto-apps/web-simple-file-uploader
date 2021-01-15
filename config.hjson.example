@@ -1,0 +1,40 @@
+{
+    // Should people be able to register for an account?
+    enableSignup: true
+
+    // List of users of admins on the service.  Requires reload of website to update.
+    admins: [
+
+    ]
+
+    limits: {
+        // Should we ever expire items?
+        expire: true
+
+        // Expire after at least minExpiry and at most maxExpiry
+        minExpiry: 30,
+        maxExpiry: 360
+
+        // Don't expire files under this size...
+        ignoreUnder: 16777216 // 16MB
+
+        // Maximum file size
+        maxSize: 4294967296 // 4GB
+
+        bannedExtensions: [
+            'exe'
+        ]
+        bannedMimeTypes: [
+            'application/x-msdownload'
+        ]
+
+        // Maximum number of attempts at generating a unique name
+        maxShortIterations: 10
+    }
+
+    // If enabled, we run all files under 32MB through virustotal.
+    virustotal: {
+        enable: false
+        key: someKey
+    }
+}
