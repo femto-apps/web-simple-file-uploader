@@ -116,5 +116,5 @@ dist
 .pnp.*
 
 config.hjson
-store/items
-store/sqlite
+store/items/*
+store/sqlite/database.sqlite
