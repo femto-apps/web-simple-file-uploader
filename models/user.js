@@ -1,37 +1,28 @@
-import sequelize from 'sequelize';
+import sequelize from 'sequelize'
+import bcrypt from 'bcryptjs'
+import { v4 as uuidv4 } from 'uuid'
 const { DataTypes } = sequelize;
 
 export default (sequelize, Sequelize) => {
     const User = sequelize.define("User", {
-        short: {
+        id: {
+            type: DataTypes.STRING,
+            unique: true,
+            allowNull: false,
+            primaryKey: true
+        },
+        username: {
             type: DataTypes.STRING,
             unique: true,
             allowNull: false
         },
-        name: {
+        apikey: {
             type: DataTypes.STRING,
-            allowNull: false
-        },
-        mime: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        size: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        virus: {
-            type: DataTypes.BOOLEAN,
-            default: null
-        },
-        virusTotalID: {
-            type: DataTypes.STRING,
-            default: null
-        },
-        store: {
-            type: DataTypes.STRING,
-            unique: true,
-            allowNull: false
+            unqiue: true,
+            allowNull: false,
+            defaultValue: () => {
+                return uuidv4()
+            }
         }
     })
 

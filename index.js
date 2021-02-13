@@ -4,36 +4,61 @@ import multer from 'multer'
 import contentDisposition from 'content-disposition'
 import sendRanges from 'send-ranges'
 import fs from 'fs'
-import fetch from 'node-fetch'
-import hjson from 'hjson'
-import FormData from 'form-data'
+import http from 'http'
+import next from 'next'
 
 import database from './models/index.js'
 
-const { Item } = database
-const config = hjson.parse(fs.readFileSync('./config.hjson', { encoding: 'utf-8' }))
+import { createAvailableShort } from './modules/short.js'
+import { scanFromStream, isFileVirus } from './modules/scan.js'
+import { decodeURLBodies, parseSessions, parseCookies, addConfigToLocals } from './routes/middleware.js'
+import config from './modules/config.js'
+import { getIndex, logout } from './routes/admin.js'
+import { createItem, itemFromShort } from './modules/item.js'
+import { passportGithubStrategyAuthenticate, passportGithubStrategyAuthenticateCallback, setupPassport, initializePassport, passportSession } from './modules/passport.js'
 
-const app = express()
+const { Item, User } = database
 
-const alphabet = '23456789abcdefghijkmnpqrstuvwxyz'
-async function createShort(options = {}) {
-    while (true) {
-        let short = ''
+const server = express()
+server.set('view engine', 'pug')
+server.use(express.static('public'))
 
-        for (let i = 0; i < options.length; i++) {
-            short += alphabet[Math.floor(Math.random() * Math.floor(alphabet.length))]
-        }
-
-        if (await Item.findOne({ where: { short } })) {
-            continue
-        }
-
-        return short
-    }
-}
+const dev = process.env.NODE_ENV !== 'production'
+const app = next({ dev, dir: './frontend' })
+const handle = app.getRequestHandler()
 
 async function main() {
-    await database.sequelize.sync({ alter: true })
+    // await database.sequelize.sync({ alter: true })
+    await app.prepare()
+
+    const router = express.Router()
+
+    setupPassport()
+
+    router.use(decodeURLBodies())
+    router.use(addConfigToLocals())
+    router.use(parseCookies())
+    router.use(parseSessions())
+    router.use(initializePassport())
+    router.use(passportSession())
+
+    // router.get('/', getIndex)
+
+    router.get('/auth/github', passportGithubStrategyAuthenticate())
+    router.get('/auth/github/callback', passportGithubStrategyAuthenticateCallback(), (req, res) => {
+        res.cookie('user', req.user.username, { expires: req.session.cookie._expires })
+        res.redirect('/')
+    })
+    router.get('/logout', logout)
+
+    // server.use(['/auth/github', '/auth/github/callback', '/logout'], router)
+    server.use((req, res, next) => {
+        if (!req.originalUrl.startsWith('/_next')) {
+            router(req, res, next)
+        } else {
+            next()
+        }
+    })
 
     const singleUpload = multer({
         limits: {
@@ -46,8 +71,6 @@ async function main() {
             }
         }),
         fileFilter: (req, file, cb) => {
-            console.log(file)
-
             const extension = file.originalname.split('.').pop()
 
             for (let banned of config.limits.bannedExtensions) {
@@ -66,38 +89,41 @@ async function main() {
         }
     }).single('upload')
 
-    app.post('/upload', singleUpload, async (req, res) => {
+    server.post('/upload', singleUpload, async (req, res) => {
         if (!req.file) {
             return res.status(415).send("Invalid file.")
         }
 
-        const short = await createShort({ length: 4 })
+        let user = {}
+        if (req.body.apikey) {
+            user = await User.findOne({ where: { apikey: req.body.apikey } })
 
-        const item = await Item.create({
+            if (!user) {
+                return res.status(401).send("Invalid API Key")
+            }
+        }
+
+        const short = await createAvailableShort()
+
+        const item = await createItem({
             short,
             name: req.file.originalname,
             mime: req.file.mimetype,
             size: req.file.size,
-            store: req.file.path
+            store: req.file.path,
+            userId: user && user.id
         })
 
         res.json({ short })
 
         if (req.file.size < 32 * 1000 * 1000 && config.virustotal.enable) {
-            const formData = new FormData()
-            formData.append('file', fs.createReadStream(req.file.path))
-
-            const virusResponse = await fetch('https://www.virustotal.com/api/v3/files', {
-                method: 'POST',
-                headers: {
-                    'x-apikey': config.virustotal.key,
-                    'content-length': req.file.size
-                },
-                body: formData
+            const scanResults = await scanFromStream({
+                fileStream: fs.createReadStream(req.file.path),
+                size: req.file.size,
+                apiKey: config.virustotal.key
             })
-                .then(res => res.json())
 
-            item.virusTotalID = virusResponse.data.id
+            item.virusTotalID = scanResults.data.id
             await item.save()
         }
     })
@@ -112,53 +138,52 @@ async function main() {
         }
     }
 
-    app.get('/:short', async (req, res, next) => {
-        const item = await Item.findOne({ where: { short: req.params.short } })
+    // server.get('/:short', async (req, res, next) => {
+    //     const { short } = req.params
+    //     const item = await itemFromShort({ short })
 
-        if (!item) {
-            return res.status(404).send("File not found")
-        }
+    //     if (!item) {
+    //         return res.status(404).send("File not found")
+    //     }
 
-        if (item.virus) {
-            return res.send("This file was detected as a virus and removed.")
-        }
+    //     if (item.virus) {
+    //         return res.send("This file was detected as a virus and removed.")
+    //     }
 
-        res.set('Content-Disposition', contentDisposition(item.name, { type: 'inline' }))
-        res.set('Content-Type', item.mime)
-        res.set('Cache-Control', 'public, max-age=604800, immutable')
+    //     res.set('Content-Disposition', contentDisposition(item.name, { type: 'inline' }))
+    //     res.set('Content-Type', item.mime)
+    //     res.set('Cache-Control', 'public, max-age=604800, immutable')
 
-        if (config.virustotal.enable && item.virusTotalID && item.virus === null) {
-            const virusResponse = await fetch(`https://www.virustotal.com/api/v3/analyses/${item.virusTotalID}`, {
-                headers: {
-                    'x-apikey': config.virustotal.key,
-                },
-            })
-                .then(res => res.json())
+    //     if (config.virustotal.enable && item.virusTotalID && item.virus === null) {
+    //         const { complete, suspicious } = await isFileVirus({
+    //             virusTotalID: item.virusTotalID,
+    //             apiKey: config.virustotal.key
+    //         })
 
-            if (virusResponse.data.attributes.status === 'completed') {
-                if (virusResponse.data.attributes.stats.suspicious + virusResponse.data.attributes.malicious > 3) {
-                    item.virus = true
-                } else {
-                    item.virus = false
-                }
-                await item.save()
-            }
-        }
+    //         if (complete) {
+    //             item.virus = suspicious
+    //             await item.save()
+    //         }
+    //     }
 
-        req.item = item
+    //     req.item = item
 
-        next()
-    }, sendRanges(retrieveFile), (req, res) => {
-        const item = req.item
+    //     next()
+    // }, sendRanges(retrieveFile), (req, res) => {
+    //     const item = req.item
 
-        res.set('Content-Length', item.size)
-        res.set('Accept-Ranges', 'bytes')
-        res.writeHead(200)
+    //     res.set('Content-Length', item.size)
+    //     res.set('Accept-Ranges', 'bytes')
+    //     res.writeHead(200)
 
-        fs.createReadStream(item.store).pipe(res)
+    //     fs.createReadStream(item.store).pipe(res)
+    // })
+
+    server.get('*', handle)
+
+    http.createServer(server).listen(8080, () => {
+        console.log('listening on port 8080')
     })
-
-    app.listen(8080, () => console.log('listening on port 8080'))
 }
 
 main()

@@ -1,14 +1,18 @@
-- File rename / deletion
-- Secure deletion URLs
-- Multi user support
-- Permission system
-- Discord webhooks
+## Must
 
-- Custom domain from uploader
-- Custom protocol from uploader
+- Able to delete files via URL.
+- Support multiple users
+- Have limits on file life time / size / extensions
 
-- Text syntax highlighting
-- Markdown rendering
+## Should
+
+- Storage should be configurable, backed by AWS / local / etc.
+- Let people list their own files
+
+## Could
+
 - Password protect uploads
-
-- Configurable backend storage (AWS, local storage, etc)
+- Markdown rendering
+- Text syntax highlighting
+- Discord integration
+- Have smart embeds for files

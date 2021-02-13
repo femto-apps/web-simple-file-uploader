@@ -1,0 +1,87 @@
+doctype html
+html
+  head
+    title #{title} :: #{config.name.title}
+
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+
+    //- link(rel='stylesheet' href='https://jenil.github.io/bulmaswatch/superhero/bulmaswatch.min.css')
+    link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css')
+    link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bulma-switch@2.0.0/dist/css/bulma-switch.min.css')
+    link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bulma-slider@2.0.4/dist/css/bulma-slider.min.css')
+
+    link(rel='stylesheet' href='/main.css')
+
+    body.main
+        nav.navbar(role='navigation' aria-label='main navigation')
+            .container
+                .navbar-brand
+                    a.navbar-item(href='/')
+                        h1.subtitle= config.name.title
+                    a.navbar-burger.burger(role='button' aria-label='menu' aria-expanded='false' data-target='navbarBasicExample')
+                        span(aria-hidden='true')
+                        span(aria-hidden='true')
+                        span(aria-hidden='true')
+                #navbarBasicExample.navbar-menu
+                    .navbar-start
+                        a(href='/').navbar-item Home
+                        a(href='/uploads').navbar-item Uploads
+                        .navbar-item.has-dropdown.is-hoverable
+                            a.navbar-link
+                                | More
+                            .navbar-dropdown
+                                a.navbar-item
+                                    | About
+                                a.navbar-item
+                                    | Contact
+                                a.navbar-item
+                                    | Statistics
+                                a.navbar-item
+                                    | Terms and Conditions
+                                hr.navbar-divider
+                                a.navbar-item
+                                    | Report an issue
+                    .navbar-end
+                        .navbar-item
+                            .buttons
+                                if user
+                                    a(href='/logout').button.is-light Logout
+                                else
+                                    a(href='/auth/github').button.is-primary Log in
+
+        script.
+            document.addEventListener('DOMContentLoaded', () => {
+
+            // Get all "navbar-burger" elements
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+
+            // Check if there are any navbar burgers
+            if ($navbarBurgers.length > 0) {
+
+                // Add a click event on each of them
+                $navbarBurgers.forEach( el => {
+                    el.addEventListener('click', () => {
+
+                        // Get the target from the "data-target" attribute
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+
+                        // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+                    });
+                });
+            }
+
+            });
+
+    block content
+
+    footer.footer
+        .content.has-text-centered
+            p #[strong= config.name.title] is licensed under MIT
+
+
+    block scripts
+    script(src="https://kit.fontawesome.com/00043d1647.js" crossorigin="anonymous")

@@ -1,4 +1,9 @@
 {
+    // Branding for the site
+    name: {
+        title: Femto Uploader
+    }
+
     // Should people be able to register for an account?
     enableSignup: true
 
@@ -12,7 +17,7 @@
         expire: true
 
         // Expire after at least minExpiry and at most maxExpiry
-        minExpiry: 30,
+        minExpiry: 30
         maxExpiry: 360
 
         // Don't expire files under this size...
@@ -36,5 +41,10 @@
     virustotal: {
         enable: false
         key: someKey
+    }
+
+    // Random key used to encode cookies
+    cookie: {
+        secret: 'CHANGEME'
     }
 }

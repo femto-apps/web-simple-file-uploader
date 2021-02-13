@@ -1,0 +1,27 @@
+.main {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+.section {
+  flex: 1;
+}
+
+.footer {
+  padding: 2rem 1.5rem 2rem;
+}
+
+input[type='range'].slider:not([orient='vertical']).has-output {
+  width: calc(100% - (6.2rem));
+}
+
+input[type='range'].slider:not([orient='vertical']).has-output + output,
+input[type='range'].slider:not([orient='vertical']).has-output-tooltip
+  + output {
+  width: 5rem;
+}
+
+.progress.upload {
+  margin: auto 10px;
+}

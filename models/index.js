@@ -2,6 +2,7 @@
 import Sequelize from 'sequelize';
 
 import initItem from './item.js'
+import initUser from './user.js'
 
 const sequelize = new Sequelize({
     dialect: 'sqlite',
@@ -9,8 +10,12 @@ const sequelize = new Sequelize({
 });
 
 const models = {
-    Item: initItem(sequelize)
+    Item: initItem(sequelize),
+    User: initUser(sequelize),
 }
+
+models.Item.belongsTo(models.User)
+models.User.hasMany(models.Item)
 
 export default {
     sequelize,

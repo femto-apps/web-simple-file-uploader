@@ -1,0 +1,122 @@
+extends layout.pug
+
+block content
+    section.section
+        .container
+            .columns
+                .column.is-one-third
+                    h1.subtitle Options
+
+                    .field
+                        label.label Password
+                        .control.has-icons-left.has-icons-right
+                            input.input(type='text' placeholder='Leave blank for none')
+                            span.icon.is-small.is-left
+                                i.fas.fa-key
+
+                    .field#expiry
+                        label.label Expiry Time
+                        .control
+                            input.has-output.slider.is-fullwidth(step='1' min='0' max='10' value='10' type='range')#expiry
+                            output(for='expiry') never
+
+                    script.
+                        const expiryInput = document.querySelector('#expiry input[type=range]')
+                        const expiryOutput = document.querySelector('#expiry output')
+
+                        function updateLabel() {
+                            let time
+
+                            switch(expiryInput.value) {
+                                case "0": 
+                                    time='1 hour'
+                                    break
+                                case "1": 
+                                    time='3 hours'
+                                    break
+                                case "2": 
+                                    time='6 hours'
+                                    break
+                                case "3": 
+                                    time='1 day'
+                                    break
+                                case "4": 
+                                    time='3 days'
+                                    break
+                                case "5": 
+                                    time='1 week'
+                                    break
+                                case "6": 
+                                    time='2 weeks'
+                                    break
+                                case "7": 
+                                    time='1 month'
+                                    break
+                                case "8": 
+                                    time='3 months'
+                                    break
+                                case "9": 
+                                    time='6 months'
+                                    break
+                                case "10": 
+                                    time='never'
+                                    break
+                                default:
+                                    time='unknown'
+                            }
+
+                            expiryOutput.textContent = time
+                        }
+
+                        expiryInput.oninput = updateLabel
+                        updateLabel()
+
+                    .field
+                        .control
+                            label.checkbox #[input(type='checkbox')] Destroy after download?
+
+                    .field
+                        .control
+                            label.checkbox #[input(type='checkbox')] Peer to peer streaming?
+
+
+                .column
+                    .file.is-centered.is-boxed.is-primary.has-name#uploads
+                        label.file-label
+                            input.file-input(type='file' name='uploads' multiple)
+                            span.file-cta
+                                span.file-icon
+                                    i.fas.fa-upload
+                                span.file-label Upload files
+
+            .columns
+                for i in ["a", "b", "c"]
+                    .column
+                        .card
+                            header.card-header
+                                p.card-header-title Example File.png
+
+                            .card-image
+                                figure.image.is4by3
+                                    img(src='https://bulma.io/images/placeholders/1280x960.png' alt='Placeholder image')
+                            .card-content
+                                time(datetime='2016-1-1') 11:09 PM - 1 Jan 2016
+                            .card-footer
+                                if i == 'a'
+                                    p.card-footer-item(href='#') 15%
+                                    progress.upload.progress.is-primary(value="15" max="100")
+                                else
+                                    a.card-footer-item(href='#') Link
+                                    a.card-footer-item(href='#') Direct Link
+                                    a.card-footer-item(href='#') More Info
+
+                        
+
+                    
+
+                    script.
+                        const uploadsInput = document.querySelector('#uploads input[type=file]')
+
+                        uploadsInput.onchange = () => {
+                            console.log(uploadsInput.files)
+                        }
