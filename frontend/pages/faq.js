@@ -9,18 +9,18 @@ function FAQ() {
                 <title>FAQ : Femto Uploader</title>
             </Head>
             <DashboardLayout active="faq">
-                <div class="main">
-                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                <div className="main">
+                    <nav className="breadcrumb" aria-label="breadcrumbs">
                         <ul>
                             <li><Link href='/'><a>Femto</a></Link></li>
-                            <li class="is-active"><a href="/faq" aria-current="page">FAQ</a></li>
+                            <li className="is-active"><a href="/faq" aria-current="page">FAQ</a></li>
                         </ul>
                     </nav>
-                    <h1 class="title">
+                    <h1 className="title">
                         FAQ
                     </h1>
 
-                    <div class="content">
+                    <div className="content">
                         <b>What is this?</b>
                         <p>Femto Uploader is a free service that allows people to share files and shorten URLs.  It's meant to be 'no fuss' with no invasive tracking.  The source code is openly available <a href="https://github.com/femto-apps/web-simple-file-uploader">here.</a></p>
 

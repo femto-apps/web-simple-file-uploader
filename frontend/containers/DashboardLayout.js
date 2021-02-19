@@ -14,27 +14,27 @@ function DashboardLayout({ children, active }) {
                 <hr />
                 <Columns>
                     <Column size="is-one-quarter">
-                        <aside class="menu sidebar-nav">
-                            <p class="menu-label">
+                        <aside className="menu sidebar-nav">
+                            <p className="menu-label">
                                 General
   </p>
-                            <ul class="menu-list">
+                            <ul className="menu-list">
                                 <li><Link href="/"><a className={active === 'frontpage' ? 'is-active' : ''}>Frontpage</a></Link></li>
                                 <li><Link href="/faq"><a className={active === 'faq' ? 'is-active' : ''}>FAQ</a></Link></li>
                                 <li><Link href="/contact"><a className={active === 'contact' ? 'is-active' : ''}>Contact Us</a></Link></li>
                             </ul>
                             {
                                 !loading && user ? <>
-                                    <p class="menu-label">
+                                    <p className="menu-label">
                                         Uploads
   </p>
-                                    <ul class="menu-list">
+                                    <ul className="menu-list">
                                         <li><a>List Uploads</a></li>
                                     </ul>
-                                    <p class="menu-label">
+                                    <p className="menu-label">
                                         Account
   </p>
-                                    <ul class="menu-list">
+                                    <ul className="menu-list">
                                         <li><Link href="/token"><a className={active === 'token' ? 'is-active' : ''}>Manage Token</a></Link></li>
                                         <li><Link href="/logout"><a>Logout</a></Link></li>
                                     </ul>
@@ -42,10 +42,10 @@ function DashboardLayout({ children, active }) {
                             }
                             {
                                 !loading && !user ? <>
-                                    <p class="menu-label">
+                                    <p className="menu-label">
                                         Account
   </p>
-                                    <ul class="menu-list">
+                                    <ul className="menu-list">
                                         <li><Link href={`/auth/github?redirect=/${active}`}><a>Register</a></Link></li>
                                         <li><Link href={`/auth/github?redirect=/${active}`}><a>Login</a></Link></li>
                                     </ul>

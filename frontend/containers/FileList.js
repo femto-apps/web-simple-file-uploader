@@ -8,8 +8,8 @@ function File({ file, key, forceUpdate }) {
     let error
     if (file.error) {
         error = (
-            <div class="notification is-danger" style={{ padding: '0.5rem 2.5rem 0.5rem 1.5rem', marginBottom: '0.5rem', marginTop: '1rem' }}>
-                <button class="delete" onClick={() => { file.error = ''; forceUpdate() }}></button>
+            <div className="notification is-danger" style={{ padding: '0.5rem 2.5rem 0.5rem 1.5rem', marginBottom: '0.5rem', marginTop: '1rem' }}>
+                <button className="delete" onClick={() => { file.error = ''; forceUpdate() }}></button>
                 {file.error}
             </div>
         )
@@ -22,7 +22,7 @@ function File({ file, key, forceUpdate }) {
     )
 
     return (
-        <div style={{ paddingBottom: '0.5rem' }}>
+        <div style={{ paddingBottom: '0.5rem' }} key={key}>
             <span>
                 {error}
                 <Columns>
@@ -45,7 +45,7 @@ function File({ file, key, forceUpdate }) {
         </div>
         // <li key={key}>
         //     {file.path} - {file.size} bytes
-        //     <progress class="progress is-success" value="60" max="100">60%</progress>
+        //     <progress className="progress is-success" value="60" max="100">60%</progress>
         // </li>
     )
 }

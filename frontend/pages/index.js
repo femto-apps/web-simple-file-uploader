@@ -46,24 +46,35 @@ function Home(props) {
     useWarnIfUnsavedChanges(warnOnChangePage)
 
     const uploadFiles = async acceptedFiles => {
+        console.log('uploading files', acceptedFiles)
 
         acceptedFiles.forEach(async (file) => {
+            console.log('uploading file', file)
+
             setFiles((array) => [...array, file])
+
+            console.log('updated set file array')
 
             const data = new FormData()
             data.append('upload', file)
 
+            console.log('made new form data')
+
             axios.post('/upload', data, {
                 onUploadProgress: (p) => {
                     file.progress = p.loaded / p.total
-                    console.log(file.progress)
+                    console.log('got progress report', file.progress)
                     forceUpdate()
                 }
             })
                 .then((req) => {
+                    console.log('got post response')
+
                     file.short = req.data.short
                     forceUpdate()
                 }).catch(err => {
+                    console.log('ran into an error')
+
                     file.error = err
                     forceUpdate()
                 })
@@ -75,6 +86,7 @@ function Home(props) {
     }
 
     const onDrop = useCallback(async acceptedFiles => {
+        console.log('accepting files', acceptedFiles)
         // Do something with the files
         uploadFiles(acceptedFiles)
     }, [])

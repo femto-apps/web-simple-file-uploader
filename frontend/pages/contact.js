@@ -16,7 +16,7 @@ function Contact() {
     console.log(email, EmailValidator.validate(email))
 
     if (email !== '' && !EmailValidator.validate(email)) {
-        emailError = <p class="help is-danger">This email is invalid</p>
+        emailError = <p className="help is-danger">This email is invalid</p>
     }
 
     return (
@@ -25,14 +25,14 @@ function Contact() {
                 <title>Contact : Femto Uploader</title>
             </Head>
             <DashboardLayout active="contact">
-                <div class="main">
-                    <nav class="breadcrumb" aria-label="breadcrumbs">
+                <div className="main">
+                    <nav className="breadcrumb" aria-label="breadcrumbs">
                         <ul>
                             <li><Link href='/'><a>Femto</a></Link></li>
-                            <li class="is-active"><a href="/contact" aria-current="page">Contact</a></li>
+                            <li className="is-active"><a href="/contact" aria-current="page">Contact</a></li>
                         </ul>
                     </nav>
-                    <h1 class="title">
+                    <h1 className="title">
                         Contact
                     </h1>
 
@@ -44,32 +44,32 @@ function Contact() {
                     <hr />
                     <br />
 
-                    <p class="subtitle">
+                    <p className="subtitle">
                         Form
                     </p>
 
-                    <div class="field">
-                        <label class="label">Email</label>
-                        <div class="control has-icons-left has-icons-right">
-                            <input class={`input ${emailError ? 'is-danger' : ''}`} type="email" placeholder="hello@there.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-                            <span class="icon is-small is-left">
+                    <div className="field">
+                        <label className="label">Email</label>
+                        <div className="control has-icons-left has-icons-right">
+                            <input className={`input ${emailError ? 'is-danger' : ''}`} type="email" placeholder="hello@there.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+                            <span className="icon is-small is-left">
                                 <FontAwesomeIcon icon={faEnvelope} />
                             </span>
                         </div>
                         {emailError}
                     </div>
 
-                    <div class="field">
-                        <label class="label">Message</label>
-                        <div class="control">
-                            <textarea class="textarea" placeholder="Your message here..." value={message} onChange={(e) => setMessage(e.target.value)}></textarea>
+                    <div className="field">
+                        <label className="label">Message</label>
+                        <div className="control">
+                            <textarea className="textarea" placeholder="Your message here..." value={message} onChange={(e) => setMessage(e.target.value)}></textarea>
                         </div>
                     </div>
 
 
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button class="button is-link">Submit</button>
+                    <div className="field is-grouped">
+                        <div className="control">
+                            <button className="button is-link">Submit</button>
                         </div>
                     </div>
                 </div>

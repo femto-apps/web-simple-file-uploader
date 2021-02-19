@@ -20,8 +20,8 @@ function FilesTab({ uploadFile }) {
     let error
     if (errorValue) {
         error = (
-            <div class="notification is-danger" style={{ padding: '0.5rem 2.5rem 0.5rem 1.5rem' }}>
-                <button class="delete" onClick={() => setErrorValue('')}></button>
+            <div className="notification is-danger" style={{ padding: '0.5rem 2.5rem 0.5rem 1.5rem' }}>
+                <button className="delete" onClick={() => setErrorValue('')}></button>
                 {errorValue}
             </div>
         )
