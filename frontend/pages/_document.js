@@ -5,7 +5,7 @@ class MyDocument extends Document {
         return (
             <Html>
                 <Head>
-
+                    <link rel="shortcut icon" href="/favicon.ico" />
                 </Head>
                 <body style={{ backgroundColor: '#1f2d3b' }}>
                     <Main />

@@ -13,15 +13,15 @@ import { createAvailableShort } from './modules/short.js'
 import { scanFromStream, isFileVirus } from './modules/scan.js'
 import { decodeURLBodies, parseSessions, parseCookies, addConfigToLocals } from './routes/middleware.js'
 import config from './modules/config.js'
+
 import { getIndex, logout } from './routes/admin.js'
 import { createItem, itemFromShort } from './modules/item.js'
 import { passportGithubStrategyAuthenticate, passportGithubStrategyAuthenticateCallback, setupPassport, initializePassport, passportSession } from './modules/passport.js'
+import { getToken, resetToken } from './routes/api/token.js'
 
 const { Item, User } = database
 
 const server = express()
-server.set('view engine', 'pug')
-server.use(express.static('public'))
 
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev, dir: './frontend' })
@@ -44,12 +44,21 @@ async function main() {
 
     // router.get('/', getIndex)
 
-    router.get('/auth/github', passportGithubStrategyAuthenticate())
+    router.get('/auth/github', (req, res, next) => {
+        req.session.redirect = req.query.redirect
+        console.log('updated session to', req.query.redirect)
+        next()
+    }, passportGithubStrategyAuthenticate())
     router.get('/auth/github/callback', passportGithubStrategyAuthenticateCallback(), (req, res) => {
         res.cookie('user', req.user.username, { expires: req.session.cookie._expires })
-        res.redirect('/')
+        console.log('redreicting to', req.session.redirect)
+        res.redirect(req.session.redirect || '/')
+        req.session.direct = ''
     })
     router.get('/logout', logout)
+
+    router.get('/api/token', getToken)
+    router.post('/api/token/new', resetToken)
 
     // server.use(['/auth/github', '/auth/github/callback', '/logout'], router)
     server.use((req, res, next) => {
@@ -138,48 +147,54 @@ async function main() {
         }
     }
 
-    // server.get('/:short', async (req, res, next) => {
-    //     const { short } = req.params
-    //     const item = await itemFromShort({ short })
+    server.get('*', async (req, res, next) => {
+        const short = req.originalUrl.split('/')[1]
 
-    //     if (!item) {
-    //         return res.status(404).send("File not found")
-    //     }
+        // console.log('hello', short)
 
-    //     if (item.virus) {
-    //         return res.send("This file was detected as a virus and removed.")
-    //     }
+        if (short === '_next' || short === '') {
+            return handle(req, res, next)
+        }
 
-    //     res.set('Content-Disposition', contentDisposition(item.name, { type: 'inline' }))
-    //     res.set('Content-Type', item.mime)
-    //     res.set('Cache-Control', 'public, max-age=604800, immutable')
+        const item = await itemFromShort({ short })
 
-    //     if (config.virustotal.enable && item.virusTotalID && item.virus === null) {
-    //         const { complete, suspicious } = await isFileVirus({
-    //             virusTotalID: item.virusTotalID,
-    //             apiKey: config.virustotal.key
-    //         })
+        if (!item) {
+            return handle(req, res, next)
+            return res.status(404).send("File not found")
+        }
 
-    //         if (complete) {
-    //             item.virus = suspicious
-    //             await item.save()
-    //         }
-    //     }
+        if (item.virus) {
+            return res.send("This file was detected as a virus and removed.")
+        }
 
-    //     req.item = item
+        res.set('Content-Disposition', contentDisposition(item.name, { type: 'inline' }))
+        res.set('Content-Type', item.mime)
+        res.set('Cache-Control', 'public, max-age=604800, immutable')
 
-    //     next()
-    // }, sendRanges(retrieveFile), (req, res) => {
-    //     const item = req.item
+        if (config.virustotal.enable && item.virusTotalID && item.virus === null) {
+            const { complete, suspicious } = await isFileVirus({
+                virusTotalID: item.virusTotalID,
+                apiKey: config.virustotal.key
+            })
 
-    //     res.set('Content-Length', item.size)
-    //     res.set('Accept-Ranges', 'bytes')
-    //     res.writeHead(200)
+            if (complete) {
+                item.virus = suspicious
+                await item.save()
+            }
+        }
 
-    //     fs.createReadStream(item.store).pipe(res)
-    // })
+        req.item = item
 
-    server.get('*', handle)
+        next()
+    }, sendRanges(retrieveFile), (req, res) => {
+        const item = req.item
+
+        res.set('Content-Length', item.size)
+        res.set('Accept-Ranges', 'bytes')
+        res.writeHead(200)
+
+        fs.createReadStream(item.store).pipe(res)
+    })
 
     http.createServer(server).listen(8080, () => {
         console.log('listening on port 8080')

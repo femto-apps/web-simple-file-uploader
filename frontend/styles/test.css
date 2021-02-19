@@ -1,0 +1,87 @@
+/* .upload .upload-status {
+  position: absolute;
+  display: block;
+  z-index: 5;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 60%;
+  height: 80%;
+  padding: 25px 45px;
+  background-color: #fff;
+  box-shadow: 0px 10px 75px rgba(0, 0, 0, 0.5);
+} */ /*
+.upload .upload-status h1 {
+  text-transform: uppercase;
+  font-size: 20px;
+  text-align: center;
+  margin: 15px 0px;
+  color: #2c3e50;
+}
+.upload .upload-status .file {
+  height: 50px;
+  width: 100%;
+  position: relative;
+  margin: 8px 0px;
+}
+.upload .upload-status .file .file-description {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.upload .upload-status .file .file-description .file-name {
+  color: #6e6e6e;
+  font-weight: 500;
+}
+.upload .upload-status .file .file-description .file-size {
+  font-size: 13px;
+  text-transform: lowercase;
+  color: #93e7b6;
+}
+.upload .upload-status .file .file-status {
+  width: 100%;
+  height: 5px;
+  margin-top: 10px;
+}
+.upload .upload-status .file .file-status .status-field {
+  background-color: #e9e9e9;
+  height: 5px;
+  width: 100%;
+  border-radius: 2.5px;
+  position: relative;
+  overflow: hidden;
+}
+.upload .upload-status .file .file-status .status-field .status-line {
+  transition: background-image 0.2s linear;
+  max-width: 100%;
+  min-width: 1%;
+  height: 100%;
+  background-color: #9b59b6;
+  background-image: linear-gradient(0deg, #8e44ad 50%, #9b59b6 50%);
+  -webkit-animation: loading 1.5s;
+  animation: loading 1.5s;
+}
+.upload .upload-status .file:hover .file-status .status-field .status-line {
+  background-image: linear-gradient(0deg, #d35400 50%, #e67e22 50%);
+} */
+
+.is-flex-direction-column {
+  flex-direction: column;
+}
+.is-flex-1 {
+  flex: 1;
+}
+
+#page-container {
+  min-height: 100vh;
+}
+
+.sidebar-nav {
+  padding: 1rem;
+  flex: 0 0 400px;
+  height: 100%;
+}
+
+.main {
+}

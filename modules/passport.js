@@ -7,12 +7,14 @@ const { User } = database
 const { Strategy: GitHubStrategy } = PassportGithub
 
 export function setupPassport() {
-    passport.serializeUser((user, cb) => {
-        cb(null, user)
+    passport.serializeUser((user, done) => {
+        done(null, user.id)
     })
 
-    passport.deserializeUser((obj, cb) => {
-        cb(null, obj)
+    passport.deserializeUser((id, done) => {
+        User.findOne({ where: { id } })
+            .then(user => done(null, user))
+            .catch(err => done(err))
     })
 
     passport.use(passportGithubStrategySetup())

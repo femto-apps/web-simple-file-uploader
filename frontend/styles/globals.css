@@ -27,15 +27,17 @@ input[type='range'].slider:not([orient='vertical']).has-output-tooltip
 }
 
 textarea,
-input[type='text'] {
+input[type='text'],
+input[type='email'] {
   background-color: rgb(24, 26, 27) !important;
-  border-color: rgb(109, 102, 90) !important;
+  border-color: rgb(109, 102, 90);
   color: rgb(204, 199, 192) !important;
   box-shadow: rgba(8, 8, 8, 0.05) 0px 0.0625em 0.125em inset !important;
 }
 
 textarea::placeholder,
 input[type='text']::placeholder,
+input[type='email']::placeholder,
 ::placeholder {
   color: rgba(204, 199, 192, 0.3) !important;
 }

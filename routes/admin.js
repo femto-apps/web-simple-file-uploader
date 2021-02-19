@@ -9,5 +9,6 @@ export function logout(req, res) {
     req.logout()
     console.log('setting cookie to expire immediately')
     res.clearCookie('user')
-    res.redirect('/')
+    res.redirect(req.session.redirect || '/')
+    req.session.redirect = ''
 }

@@ -32,7 +32,7 @@ export function parseSessions() {
         db: sequelize
     })
 
-    store.sync()
+    // store.sync()
 
     return session({
         store,
